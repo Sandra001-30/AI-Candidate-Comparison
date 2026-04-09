@@ -1,0 +1,106 @@
+<html lang="en">
+<head>
+    <title>Candidate Comparison</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #1a1a2e; padding: 2rem; }
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        p { font-size: 14px; color: #666; margin-bottom: 1rem; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e5e7eb; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px; margin-top: 1rem; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #fafafa; color: #1a1a2e; }
+        button { width: 100%; padding: 12px; background: #6c63ff; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 1.5rem; }
+        button:hover { background: #5a52d5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Candidate Comparison</h1>
+        <p>Enter scores for each candidate to find the best fit.</p>
+        <div id="CandidatesContainer">
+            <h3>Candidate1</h3>
+            <label>Candidate Name</label>
+            <input type="text" placeholder="e.g. Priya Sharma" class="cName"/>
+            <label>Overall Score(0-100)</label>
+            <input type="number" placeholder="e.g. 75" class="cOverall"/>
+            <label>Communication Score(0-100)</label>
+            <input type="number" placeholder="e.g. 80" class="cComm"/>
+            <label>Role Fit Score (0-100)</label>
+            <input type="number" placeholder="e.g. 70" class="cFit"/>
+
+            <br><br>
+            <h3>Candidate 2</h3>
+            <label>Candidate Name</label>
+            <input type="text" placeholder="e.g. John Doe" class="cName"/>
+            <label>Overall Score (0-100)</label>
+           <input type="number" placeholder="e.g. 60" class="cOverall"/>
+           <label>Communication Score (0-100)</label>
+           <input type="number" placeholder="e.g. 65" class="cComm"/>
+           <label>Role Fit Score (0-100)</label>
+           <input type="number" placeholder="e.g. 55" class="cFit"/>
+
+        </div>
+        <button onclick="compare()">Compare Candidates</button>
+        <div id="result" style="display:none;"></div>
+        </div>
+    </div>
+    <script>
+        function compare(){
+            const names=document.querySelectorAll('.cName');
+            const overalls= document.querySelectorAll('.cOverall');
+            const comms=document.querySelectorAll('.cComm')
+            const fits=document.querySelectorAll('.cFit');
+
+            const candidates =[];
+            for (let i=0;i<names.length; i++){
+                const name=names[i].value.trim();
+                const overall=parseInt(overalls[i].value);
+                const communication=parseInt(comms[i].value);
+                const fit=parseInt(fits[i].value);
+
+                if (!name || isNaN(overall) || isNaN(communication) || isNaN(fit)) {
+                    alert('Please fill in all fields for Candidate ' + (i + 1));
+                   return;
+                }
+                candidates.push({name,overall,communication,fit});
+            }
+            candidates.sort((a,b)=> b.overall-a.overall);
+            const winner=candidates[0];
+            let html='';
+            html+=`<h2 style="margin-top:1.5rem;">Results</h2>`;
+            html += `<div style="background:#00b894; color:white; padding:12px 20px; border-radius:8px; font-size:16px; font-weight:600; text-align:center; margin-bottom:1rem;">
+                Winner:${winner.name} with overall score ${winner.overall}
+            </div>`;
+            candidates.forEach((c,i)=>{
+                html+=`
+                <div style="border:1px solid #e5e7eb; border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                    <h3 style="margin-bottom:8px;">#${i+1} ${c.name}</h3>
+                    <p>Overall Score: <strong>${c.overall}</strong></p>
+                    <p>Communication: <strong>${c.communication}</strong></p>
+                    <p>Role Fit: <strong>${c.fit}</strong></p>
+                </div>`;
+            });
+            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').style.display = 'block';
+        }
+        window.onload = function() {
+            const saved = JSON.parse(localStorage.getItem('candidates') || '[]');
+            if (saved.length === 0) return;
+
+            const names = document.querySelectorAll('.cName');
+            const overalls = document.querySelectorAll('.cOverall');
+            const comms = document.querySelectorAll('.cComm');
+            const fits = document.querySelectorAll('.cFit');
+
+            saved.forEach((c, i) => {
+                if (i < names.length) {
+                    names[i].value = c.name;
+                    overalls[i].value = c.overall;
+                    comms[i].value = c.communication;
+                    fits[i].value = c.fit;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
